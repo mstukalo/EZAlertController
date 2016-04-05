@@ -71,6 +71,24 @@ public class EZAlertController {
         return alert
     }
     
+    public class func alert(
+        title: String,
+        message: String,
+        buttons:[String],
+        buttonsStyles: [UIAlertActionStyle],
+        tapBlock:((UIAlertAction,Int) -> Void)?) -> UIAlertController{
+        
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .Alert,
+            buttons: buttons,
+            buttonsStyles: buttonsStyles,
+            tapBlock: tapBlock)
+        instance.topMostController()?.presentViewController(alert, animated: true, completion: nil)
+        return alert
+    }
+    
     public class func actionSheet(title: String, message: String, sourceView: UIView, actions: [UIAlertAction]) -> UIAlertController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.ActionSheet)
         for action in actions {
@@ -92,24 +110,48 @@ public class EZAlertController {
     
 }
 
-
 private extension UIAlertController {
-    convenience init(title: String?, message: String?, preferredStyle: UIAlertControllerStyle, buttons:[String], tapBlock:((UIAlertAction,Int) -> Void)?) {
+    convenience init(
+        title: String?,
+        message: String?,
+        preferredStyle: UIAlertControllerStyle,
+        buttons:[String],
+        tapBlock:((UIAlertAction,Int) -> Void)?) {
+        
         self.init(title: title, message: message, preferredStyle:preferredStyle)
         var buttonIndex = 0
         for buttonTitle in buttons {
             let action = UIAlertAction(title: buttonTitle, preferredStyle: .Default, buttonIndex: buttonIndex, tapBlock: tapBlock)
-            buttonIndex++
+            buttonIndex += 1
+            self.addAction(action)
+        }
+    }
+    
+    convenience init(
+        title: String?,
+        message: String?,
+        preferredStyle: UIAlertControllerStyle,
+        buttons:[String],
+        buttonsStyles: [UIAlertActionStyle],
+        tapBlock:((UIAlertAction,Int) -> Void)?) {
+        
+        self.init(title: title, message: message, preferredStyle:preferredStyle)
+        var buttonIndex = 0
+        for buttonTitle in buttons {
+            let action = UIAlertAction(
+                title: buttonTitle,
+                preferredStyle: buttonsStyles[buttonIndex],
+                buttonIndex: buttonIndex,
+                tapBlock: tapBlock)
+            buttonIndex += 1
             self.addAction(action)
         }
     }
 }
 
-
-
 private extension UIAlertAction {
     convenience init(title: String?, preferredStyle: UIAlertActionStyle, buttonIndex:Int, tapBlock:((UIAlertAction,Int) -> Void)?) {
-        self.init(title: title, style: style) {
+        self.init(title: title, style: preferredStyle) {
             (action:UIAlertAction) in
             if let block = tapBlock {
                 block(action,buttonIndex)
