@@ -27,6 +27,10 @@ public class EZAlertController {
     
     private func topMostController() -> UIViewController? {
         
+        if self.viewController != nil {
+            return self.viewController
+        }
+        
         var presentedVC = UIApplication.sharedApplication().keyWindow?.rootViewController
         while let pVC = presentedVC?.presentedViewController
         {
@@ -38,6 +42,8 @@ public class EZAlertController {
         }
         return presentedVC
     }
+    
+    var viewController: UIViewController!
     
     
     //==========================================================================================================
